@@ -1,22 +1,51 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import kwLogo from '../assets/kw_logo.png';
+import { authenticateUser } from './auth';
 
 const AuthLayout = () => {
+  const [backNumber, setBackNumber] = useState('');
+  const [name, setName] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const authResult = await authenticateUser({ 
+        backNumber: Number(backNumber), 
+        name 
+      });
+      if (!authResult.success) {
+        window.alert('킬러웨일즈 선수단이 아닙니다.')
+        return
+      } 
+
+      window.alert('킬러웨일즈 선수단입니다.')
+    } catch (error) {
+      window.alert('인증 중 오류가 발생했습니다.')
+      console.error('인증 오류:', error);
+    }
+  }
+  
   return (
     <Container>
       <LogoWrapper>
         <Logo src={kwLogo} alt="KW Logo" />
       </LogoWrapper>
-      <AuthForm>
+      <AuthForm onSubmit={handleSubmit}>
         <Input 
-          type="text" 
+          type="number" 
           placeholder="등번호를 입력하세요"
+          value={backNumber}
+          onChange={(e) => setBackNumber(e.target.value)}
         />
         <Input 
           type="text" 
           placeholder="이름을 입력하세요"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
-        <AuthButton>인증하기</AuthButton>
+        <AuthButton type="submit">인증하기</AuthButton>
       </AuthForm>
     </Container>
   );
